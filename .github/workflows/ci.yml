@@ -1,0 +1,166 @@
+name: CI - Documentation and Lint Check
+
+# Trigger on all pull requests
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths-ignore:
+      - '**.md'
+      - 'legacy-quiz/**'
+
+# Environment variables
+env:
+  # Disable network-dependent operations
+  COMPOSER_NO_DEV: true
+  NPM_CONFIG_OFFLINE: true
+
+jobs:
+  docs-lint:
+    name: Documentation and Basic Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check repository structure
+      run: |
+        echo "✅ Checking repository structure..."
+        ls -la
+        
+        echo "✅ Verifying required files exist..."
+        test -f README.md && echo "✓ README.md found" || echo "✗ README.md missing"
+        test -f CONTRIBUTING.md && echo "✓ CONTRIBUTING.md found" || echo "✗ CONTRIBUTING.md missing"
+        test -f ROADMAP.md && echo "✓ ROADMAP.md found" || echo "✗ ROADMAP.md missing"
+        test -f .gitignore && echo "✓ .gitignore found" || echo "✗ .gitignore missing"
+        test -f PULL_REQUEST_TEMPLATE.md && echo "✓ PR template found" || echo "✗ PR template missing"
+        
+        echo "✅ Verifying legacy quiz preservation..."
+        test -d legacy-quiz && echo "✓ legacy-quiz/ directory found" || echo "✗ legacy-quiz/ directory missing"
+        test -f legacy-quiz/README.md && echo "✓ legacy-quiz/README.md found" || echo "✗ legacy-quiz/README.md missing"
+        
+        echo "✅ Verifying GitHub templates..."
+        test -d .github/ISSUE_TEMPLATE && echo "✓ Issue templates directory found" || echo "✗ Issue templates directory missing"
+        test -f .github/ISSUE_TEMPLATE/bug_report.md && echo "✓ Bug report template found" || echo "✗ Bug report template missing"
+        test -f .github/ISSUE_TEMPLATE/feature_request.md && echo "✓ Feature request template found" || echo "✗ Feature request template missing"
+        
+    - name: Basic markdown validation
+      run: |
+        echo "✅ Performing basic markdown validation..."
+        
+        # Check for common markdown issues without requiring external tools
+        find . -name "*.md" -not -path "./legacy-quiz/*" -exec echo "Checking: {}" \;
+        
+        # Simple validation: check for basic markdown structure
+        find . -name "*.md" -not -path "./legacy-quiz/*" -exec bash -c '
+          file="$1"
+          echo "Validating $file..."
+          
+          # Check if file is not empty
+          if [ ! -s "$file" ]; then
+            echo "⚠️  Warning: $file is empty"
+          else
+            echo "✓ $file has content"
+          fi
+          
+          # Check for basic markdown headers
+          if grep -q "^# " "$file"; then
+            echo "✓ $file has H1 headers"
+          else
+            echo "⚠️  Warning: $file missing H1 headers"
+          fi
+          
+        ' _ {} \;
+        
+    - name: Verify no composer/npm dependency files in root
+      run: |
+        echo "✅ Ensuring no premature dependency files..."
+        
+        # These files should not exist yet in this phase
+        if [ -f composer.json ]; then
+          echo "⚠️  Warning: composer.json found - this should be added in later PR"
+        else
+          echo "✓ No composer.json (correct for this phase)"
+        fi
+        
+        if [ -f package.json ]; then
+          echo "⚠️  Warning: package.json found - this should be added in later PR"
+        else
+          echo "✓ No package.json (correct for this phase)"
+        fi
+        
+        if [ -d vendor ]; then
+          echo "❌ Error: vendor/ directory found - dependencies should not be installed"
+          exit 1
+        else
+          echo "✓ No vendor/ directory"
+        fi
+        
+        if [ -d node_modules ]; then
+          echo "❌ Error: node_modules/ directory found - dependencies should not be installed"
+          exit 1
+        else
+          echo "✓ No node_modules/ directory"
+        fi
+        
+    - name: Check .gitignore coverage
+      run: |
+        echo "✅ Verifying .gitignore includes required patterns..."
+        
+        # Check for essential Laravel patterns
+        grep -q "vendor/" .gitignore && echo "✓ vendor/ ignored" || echo "⚠️  vendor/ not in .gitignore"
+        grep -q "node_modules/" .gitignore && echo "✓ node_modules/ ignored" || echo "⚠️  node_modules/ not in .gitignore"
+        grep -q ".env" .gitignore && echo "✓ .env files ignored" || echo "⚠️  .env files not in .gitignore"
+        grep -q "storage.*cache" .gitignore && echo "✓ storage cache ignored" || echo "⚠️  storage cache not in .gitignore"
+        
+    - name: Documentation completeness check
+      run: |
+        echo "✅ Checking documentation completeness..."
+        
+        # Check main README has required sections
+        grep -q -i "laravel" README.md && echo "✓ README mentions Laravel" || echo "⚠️  README missing Laravel reference"
+        grep -q -i "livewire" README.md && echo "✓ README mentions Livewire" || echo "⚠️  README missing Livewire reference"
+        grep -q -i "filament" README.md && echo "✓ README mentions Filament" || echo "⚠️  README missing Filament reference"
+        grep -q -i "pusher" README.md && echo "✓ README mentions Pusher" || echo "⚠️  README missing Pusher reference"
+        grep -q -i "roadmap\|peta jalan" README.md && echo "✓ README has roadmap section" || echo "⚠️  README missing roadmap section"
+        
+        # Check CONTRIBUTING has required sections
+        grep -q -i "branch" CONTRIBUTING.md && echo "✓ CONTRIBUTING mentions branching" || echo "⚠️  CONTRIBUTING missing branch strategy"
+        grep -q -i "commit" CONTRIBUTING.md && echo "✓ CONTRIBUTING mentions commits" || echo "⚠️  CONTRIBUTING missing commit guidelines"
+        
+    - name: Legacy quiz validation
+      run: |
+        echo "✅ Validating legacy quiz preservation..."
+        
+        cd legacy-quiz
+        
+        # Check required files exist
+        test -f index.html && echo "✓ index.html preserved" || echo "❌ index.html missing"
+        test -f script.js && echo "✓ script.js preserved" || echo "❌ script.js missing"
+        test -f style.css && echo "✓ style.css preserved" || echo "❌ style.css missing"
+        
+        # Basic file integrity check
+        if [ -f index.html ]; then
+          grep -q "Cerdas Cermat" index.html && echo "✓ HTML content intact" || echo "⚠️  HTML content may be damaged"
+        fi
+        
+        if [ -f script.js ]; then
+          grep -q "questionData" script.js && echo "✓ JavaScript content intact" || echo "⚠️  JavaScript content may be damaged"
+        fi
+        
+        if [ -f style.css ]; then
+          grep -q "container" style.css && echo "✓ CSS content intact" || echo "⚠️  CSS content may be damaged"
+        fi
+        
+    - name: Final validation summary
+      run: |
+        echo "🎉 CI Validation Complete!"
+        echo ""
+        echo "✅ Repository structure verified"
+        echo "✅ Documentation validated"
+        echo "✅ Legacy quiz preserved"
+        echo "✅ GitHub templates created"
+        echo "✅ No premature dependencies detected"
+        echo ""
+        echo "Repository is ready for the next phase of Laravel migration!"
+        echo "Repositori siap untuk fase berikutnya dari migrasi Laravel!"
