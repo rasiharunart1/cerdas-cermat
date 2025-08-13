@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Cerdas Cermat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧠 Cerdas Cermat Competition</h1>
+            <p>Uji pengetahuan Anda dengan berbagai pertanyaan menarik!</p>
+        </header>
+
+        <div class="game-area">
+            <div class="score-board">
+                <div class="score-item">
+                    <span>Skor:</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="score-item">
+                    <span>Pertanyaan:</span>
+                    <span id="question-counter">1/10</span>
+                </div>
+                <div class="score-item">
+                    <span>Waktu:</span>
+                    <span id="timer">30</span>
+                </div>
+            </div>
+
+            <div class="question-section">
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                
+                <div class="question-container">
+                    <h2 id="question-text">Memuat pertanyaan...</h2>
+                </div>
+
+                <div class="answers-container" id="answers-container">
+                    <!-- Jawaban akan dimuat di sini -->
+                </div>
+
+                <div class="controls">
+                    <button id="next-btn" class="btn btn-primary" style="display: none;">Pertanyaan Selanjutnya</button>
+                    <button id="restart-btn" class="btn btn-secondary" style="display: none;">Mulai Ulang</button>
+                </div>
+            </div>
+
+            <div class="result-section" id="result-section" style="display: none;">
+                <h2>🎉 Quiz Selesai!</h2>
+                <div class="final-score">
+                    <p>Skor Akhir: <span id="final-score">0</span>/10</p>
+                    <p id="performance-message"></p>
+                </div>
+                <button id="play-again-btn" class="btn btn-primary">Main Lagi</button>
+            </div>
+        </div>
+
+        <div class="categories" id="categories">
+            <h3>Pilih Kategori:</h3>
+            <div class="category-buttons">
+                <button class="btn category-btn" data-category="umum">Pengetahuan Umum</button>
+                <button class="btn category-btn" data-category="sejarah">Sejarah</button>
+                <button class="btn category-btn" data-category="geografi">Geografi</button>
+                <button class="btn category-btn" data-category="sains">Sains</button>
+                <button class="btn category-btn" data-category="matematika">Matematika</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Aplikasi Cerdas Cermat. Dibuat dengan ❤️</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
