@@ -1,0 +1,23 @@
+{
+  "name": "rasiharunart1/cerdas-cermat",
+  "description": "Real-time multi-participant buzzer quiz system - Laravel 11 migration scaffold",
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": "^8.2",
+    "laravel/framework": "^11.0"
+  },
+  "require-dev": {},
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  },
+  "scripts": {
+    "post-root-package-install": [
+      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+    ]
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
