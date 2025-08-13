@@ -1,0 +1,1 @@
+<livewire:participant.buzzer-button :competition="$competition" />

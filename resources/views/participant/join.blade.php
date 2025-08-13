@@ -1,0 +1,1 @@
+<livewire:participant.join-competition />

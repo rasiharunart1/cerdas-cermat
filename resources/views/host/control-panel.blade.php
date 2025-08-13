@@ -1,0 +1,1 @@
+<livewire:host.control-panel :competition="$competition" />

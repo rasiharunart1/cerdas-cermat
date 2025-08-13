@@ -58,4 +58,123 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Cerdas Cermat - Real-time Buzzer Quiz System
+
+A Laravel-based real-time multi-participant buzzer quiz system with Filament admin panel and Livewire components.
+
+## Features
+
+- **Real-time buzzer system** - Participants can buzz in to answer questions
+- **Live scoring** - Scores update in real-time across all participants
+- **Host control panel** - Complete quiz management interface
+- **Admin panel** - Filament-based administration for managing competitions, questions, and participants
+- **Responsive design** - Works on desktop and mobile devices
+- **Indonesian language** - UI text in Bahasa Indonesia
+
+## Tech Stack
+
+- **Backend**: Laravel 11, MySQL/SQLite
+- **Frontend**: Livewire 3, Alpine.js, Tailwind CSS
+- **Real-time**: Pusher (WebSocket broadcasting)
+- **Admin Panel**: Filament 3
+- **Authentication**: Laravel Breeze
+- **Permissions**: Spatie Laravel Permission
+
+## Quick Setup
+
+1. **Clone and install dependencies**:
+```bash
+git clone <repository-url>
+cd cerdas-cermat
+composer install
+npm install
+```
+
+2. **Environment setup**:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+3. **Database setup**:
+```bash
+# For SQLite (default)
+touch database/database.sqlite
+
+# Run migrations and seeders
+php artisan migrate --seed
+```
+
+4. **Configure Pusher** (for real-time features):
+```env
+PUSHER_APP_ID=your_app_id
+PUSHER_APP_KEY=your_app_key
+PUSHER_APP_SECRET=your_app_secret
+PUSHER_APP_CLUSTER=your_cluster
+```
+
+5. **Build assets and start**:
+```bash
+npm run build
+php artisan serve
+```
+
+## Usage
+
+### Demo Competition
+- **Competition Code**: `DEMO123`
+- Visit `/join` to join as a participant
+- Visit `/host/1` to access the host control panel
+- Visit `/admin` for the Filament admin panel
+
+### Host Panel
+1. Navigate to `/host/{competition_id}`
+2. Set competition status to "Running"
+3. Select and open questions for participants
+4. Monitor buzzes and award points
+5. View real-time leaderboard
+
+### Participant Experience
+1. Visit `/join` or `/p/{competition_code}`
+2. Enter competition code and display name
+3. Wait for host to open questions
+4. Press the BEL button to buzz in
+5. View live scores and competition status
+
+### Admin Panel
+- Access at `/admin` (requires authentication)
+- Manage competitions, questions, and participants
+- Create new quiz content
+- Monitor competition progress
+
+## API Endpoints
+
+- `POST /competitions/{competition}/question/open` - Open a question
+- `POST /competitions/{competition}/buzz` - Participant buzz
+- `POST /competitions/{competition}/answer/correct` - Mark answer correct
+- `POST /competitions/{competition}/answer/wrong` - Mark answer wrong  
+- `POST /competitions/{competition}/question/next` - Move to next question
+
+## Database Schema
+
+- **competitions**: Quiz competitions with status tracking
+- **questions**: Quiz questions (MCQ or short answer)
+- **question_options**: Multiple choice options
+- **participants**: Competition participants with scores
+- **buzzes**: Participant buzzing records with latency
+- **answers**: Answer submissions and scoring
+
+## Legacy Quiz
+
+The original simple JavaScript quiz has been preserved in the `legacy-quiz/` folder.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## License
+
+This project is open-sourced software licensed under the MIT license.
